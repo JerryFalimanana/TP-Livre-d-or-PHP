@@ -1,18 +1,25 @@
 <?php
     require_once 'class/Message.php';
+    require_once 'class/GuestBook.php';
 
     $title = "Livre d'or";
 
     $errors = null;
+    $success = false;
+    $guestbook = new GuestBook(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'messages');
 
     if (isset($_POST['username'], $_POST['message'])) {
         $message = new Message($_POST['username'], $_POST['message']);
         if ($message->isValid()) {
-
+            $guestbook->getMessage($message);
+            $success = true;
+            $_POST = [];
         } else {
             $errors = $message->getErrors();
         }
     }
+
+    $messages = $guestbook->getMessages();
 
     require "elements/header.php";
 ?>
@@ -23,6 +30,12 @@
     <?php if (!empty($errors)): ?>
         <div class="alert alert-danger">
             Formulaire invalide
+        </div>
+    <?php endif ?>
+
+    <?php if (!empty($success)): ?>
+        <div class="alert alert-success">
+            Merci pour votre message
         </div>
     <?php endif ?>
 
@@ -45,6 +58,14 @@
         </div>
         <button class="btn btn-primary">Envoyer</button>
     </form>
+
+    <?php if (!empty($messages)): ?>
+        <h2 class="mt-4">Vos messages</h2>
+
+        <?php foreach ($messages as $message): ?>
+            <?= $message->toHTML() ?>
+        <?php endforeach ?>
+    <?php endif ?>
 </div>
 
 <?php
