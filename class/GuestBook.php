@@ -27,8 +27,7 @@
             $lines = explode(PHP_EOL, $content);
             $messages = [];
             foreach ($lines as $line) {
-                $data = json_decode($line, true);
-                $messages[] = new Message($data['username'], $data['message'], new DateTime("@" . $data['date']));
+                $messages[] = Message::fromJSON($line);
             }
             return array_reverse($messages);
         }
